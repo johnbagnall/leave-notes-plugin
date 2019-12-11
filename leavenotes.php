@@ -9,7 +9,7 @@
  * Author URI: None
  */
 
-defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+// defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 
 add_action( 'admin_menu', 'leave_notes_menu' );
@@ -19,7 +19,7 @@ function leave_notes_menu(){
   $menu_title = 'Leave Notes';
   $capability = 'manage_options';
   $menu_slug  = 'leave-notes';
-  $function   = 'leave_notes_page';
+  $function   = 'custom_form';
   $icon_url   = 'dashicons-media-code';
   $position   = 4;
   add_menu_page( $page_title,
@@ -31,12 +31,37 @@ function leave_notes_menu(){
                  $position );
 }
 
-function leave_notes_page() {
-    ?>
-    <h1>Leave Notes</h1>
-    <form>
-        Title: <input type="text"></br>
-        Note: <textarea rows="20" cols="100"></textarea>
+
+
+function custom_form() {
+ ?>
+    <form action ="<?php echo $_SERVER['REQUEST_URI']; ?>" method ="post">
+
+    <label for name=""> Title</label><br>
+    <input type = "text" name = "title" id = "title" placeholder = "Enter Title">
+    <label for name=""> Note:</label><br>
+    <textarea type = "text" name = "note" id = "note" placeholder = "Enter Note"></textarea>
+    <input type = "submit" name = "submit" value = "Insert">
+
     </form>
-    <?php
+ <?php
 }
+
+
+if($_POST['submit']) {
+ global $wpdb;
+ $table_name ='plugin_notes';
+ $title = $_POST['title'];
+ $note = $_POST['note'];
+ 
+ $success = $wpdb->insert('plugin_notes', array(
+   "title" => $title,
+   "note" => $note,
+));
+ if($success) {
+ echo ' Inserted successfully';
+      } else {
+   echo 'not';
+   }
+}
+?>
